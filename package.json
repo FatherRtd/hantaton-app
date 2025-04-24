@@ -15,6 +15,7 @@
   "dependencies": {
     "element-plus": "^2.9.8",
     "pinia": "^3.0.1",
+    "v-network-graph": "^0.9.21",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },
