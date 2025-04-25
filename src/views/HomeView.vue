@@ -1,60 +1,52 @@
-<script setup lang="ts">
-import { reactive, ref } from "vue";
-import * as vNG from "v-network-graph";
-import data from "@/data";
-
-const layers = {
-  badge: "nodes",
-};
-
-const nodes = reactive({ ...data.nodes });
-
-const layouts = ref({ ...data.layouts });
-
-const edges = data.edges;
-const configs = data.configs;
-
-const eventHandlers: vNG.EventHandlers = {
-  "node:click": ({ node }) => {
-    nodes[node].active = !nodes[node].active;
-  },
-};
-</script>
-
 <template>
-  <v-network-graph
-    class="graph"
-    :nodes="nodes"
-    :edges="edges"
-    :layouts="layouts"
-    :configs="configs"
-    :layers="layers"
-    :event-handlers="eventHandlers"
-  >
-    <!-- Additional layer -->
-    <template #badge="{ scale }">
-      <!--
-        If the `view.scalingObjects` config is `false`(default),
-        scaling does not change the display size of the nodes/edges.
-        The `scale` is passed as a scaling factor to implement
-        this behavior. -->
-      <circle
-        v-for="(pos, node) in layouts.nodes"
-        :key="node"
-        :cx="pos.x + 9 * scale"
-        :cy="pos.y - 9 * scale"
-        :r="4 * scale"
-        :fill="nodes[node].active ? '#00cc00' : '#ff5555'"
-        style="pointer-events: none"
-      />
-    </template>
-  </v-network-graph>
+  <div class="flex h-screen overflow-hidden">
+    <AppSidebar
+      :metrics="metrics"
+      :sidebarOpen="sidebarOpen"
+      @close-sidebar="sidebarOpen = false"
+    />
+
+    <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+      <AppHeader />
+
+      <main class="grow">
+        <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto h-full">
+          <div class="mb-4">
+            <NetworkGraph />
+          </div>
+
+          <div v-if="selectedContainer != undefined" class="grid grid-cols-3 gap-4 w-full">
+            <AppCard label="Состояние контейнера">
+              <ContainerState />
+            </AppCard>
+            <AppCard label="Информация о контейнере">
+              <ContainerInfo />
+            </AppCard>
+            <AppCard label="Логи"> </AppCard>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
 </template>
 
-<style scoped>
-.graph {
-  width: 800px;
-  height: 600px;
-  border: 1px solid #000;
-}
-</style>
+<script setup lang="ts">
+import { computed, ref } from "vue";
+import AppSidebar from "../components/layout/AppSidebar.vue";
+import AppHeader from "../components/layout/AppHeader.vue";
+import NetworkGraph from "@/components/dashboard/NetworkGraph.vue";
+import AppCard from "@/components/dashboard/AppCard.vue";
+import data from "@/data";
+import type { MetricResponse } from "@/models/ContainerResponse.ts";
+import ContainerInfo from "@/components/dashboard/ContainerInfo.vue";
+import ContainerState from "@/components/dashboard/ContainerState.vue";
+import { storeToRefs } from "pinia";
+import { useAppStore } from "@/stores/useAppStore.ts";
+
+const sidebarOpen = ref(false);
+
+const mockMetrics = ref<MetricResponse>(data.mockMetricResponse);
+const metrics = computed(() => mockMetrics.value);
+
+const { selectedContainer } = storeToRefs(useAppStore());
+</script>

@@ -1,49 +1,12 @@
-import type { Edges, Layouts, Nodes } from "v-network-graph";
 import { defineConfigs } from "v-network-graph";
-
-const nodes: Nodes = {
-  node1: { name: "N1" },
-  node2: { name: "N2" },
-  node3: { name: "N3" },
-  node4: { name: "N4" },
-  node5: { name: "N5" },
-  node6: { name: "N6" },
-};
-
-const edges: Edges = {
-  edge1: { source: "node1", target: "node2" },
-  edge2: { source: "node2", target: "node3" },
-  edge3: { source: "node2", target: "node4" },
-  edge4: { source: "node4", target: "node5" },
-  edge5: { source: "node5", target: "node4" },
-  edge6: { source: "node4", target: "node6" },
-};
-
-const layouts: Layouts = {
-  nodes: {
-    node1: { x: 0, y: 0 },
-    node2: { x: 80, y: 80 },
-    node3: { x: 0, y: 160 },
-    node4: { x: 240, y: 80 },
-    node5: { x: 320, y: 0 },
-    node6: { x: 320, y: 160 },
-  },
-};
+import type { MetricResponse } from "@/models/ContainerResponse.ts";
 
 const configs = defineConfigs({
+  view: {
+    scalingObjects: true,
+  },
   node: {
-    normal: {
-      type: "rect",
-      width: 32,
-      height: 32,
-      borderRadius: 6,
-      color: "#ffffff",
-      strokeWidth: 1,
-      strokeColor: "#888888",
-    },
-    hover: {
-      color: "#eeeeee",
-    },
+    selectable: true,
   },
   edge: {
     normal: {
@@ -61,9 +24,124 @@ const configs = defineConfigs({
   },
 });
 
+const mockMetricResponse: MetricResponse = {
+  timestamp: new Date().toISOString(),
+  networks: [
+    {
+      name: "network-alpha",
+      containers: [
+        {
+          name: "alpha-container-1",
+          ip: "10.0.0.1",
+          id: "alpha-1",
+          status: { status: "running", state: "healthy" },
+          ports: [
+            { public: 8001, private: 80 },
+            { public: 8443, private: 443 },
+          ],
+          imageName: "nginx:latest",
+          to: [
+            {
+              name: "alpha-container-2",
+              ip: "10.0.0.2",
+              traffic: {
+                tcp: { bytes: 1000000, packets: 1000 },
+                udp: { bytes: 50000, packets: 100 },
+              },
+            },
+          ],
+        },
+        {
+          name: "alpha-container-2",
+          ip: "10.0.0.2",
+          id: "alpha-2",
+          status: { status: "running", state: "healthy" },
+          ports: [{ public: 3000, private: 3000 }],
+          imageName: "node:18",
+          to: [
+            {
+              name: "alpha-container-3",
+              ip: "10.0.0.3",
+              traffic: {
+                tcp: { bytes: 800000, packets: 800 },
+                udp: { bytes: 30000, packets: 60 },
+              },
+            },
+          ],
+        },
+        {
+          name: "alpha-container-3",
+          ip: "10.0.0.3",
+          id: "alpha-3",
+          status: { status: "exited", state: "unhealthy" },
+          ports: [{ public: 5000, private: 5000 }],
+          imageName: "redis:7",
+          to: [],
+        },
+      ],
+    },
+    {
+      name: "network-beta",
+      containers: [
+        {
+          name: "beta-container-1",
+          ip: "10.1.0.1",
+          id: "beta-1",
+          status: { status: "running", state: "healthy" },
+          ports: [{ public: 9000, private: 9000 }],
+          imageName: "postgres:15",
+          to: [
+            {
+              name: "beta-container-2",
+              ip: "10.1.0.2",
+              traffic: {
+                tcp: { bytes: 300000, packets: 400 },
+                udp: { bytes: 1000, packets: 10 },
+              },
+            },
+          ],
+        },
+        {
+          name: "beta-container-2",
+          ip: "10.1.0.2",
+          id: "beta-2",
+          status: { status: "paused", state: "unknown" },
+          ports: [{ public: 6379, private: 6379 }],
+          imageName: "mongo:6",
+          to: [
+            {
+              name: "beta-container-1",
+              ip: "10.1.0.2",
+              traffic: {
+                tcp: { bytes: 300000, packets: 400 },
+                udp: { bytes: 1000, packets: 10 },
+              },
+            },
+            {
+              name: "beta-container-3",
+              ip: "10.1.0.3",
+              traffic: {
+                tcp: { bytes: 500000, packets: 600 },
+                udp: { bytes: 2000, packets: 20 },
+              },
+            },
+          ],
+        },
+        {
+          name: "beta-container-3",
+          ip: "10.1.0.3",
+          id: "beta-3",
+          status: { status: "running", state: "starting" },
+          ports: [{ public: 7000, private: 7000 }],
+          imageName: "alpine:latest",
+          to: [],
+        },
+      ],
+    },
+  ],
+};
+
 export default {
-  nodes,
-  edges,
-  layouts,
   configs,
+  mockMetricResponse,
 };
