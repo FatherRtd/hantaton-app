@@ -1,3 +1,64 @@
+<script setup lang="ts">
+import * as vNG from "v-network-graph";
+import data from "@/data";
+
+import { storeToRefs } from "pinia";
+import { useAppStore } from "@/stores/useAppStore.ts";
+import { useNetworkConverter } from "@/useNetworkConverter.ts";
+import { ref } from "vue";
+
+const appStore = useAppStore();
+
+const { selectedNetwork } = storeToRefs(useAppStore());
+
+const { nodes, edges, layouts } = useNetworkConverter(selectedNetwork);
+
+const configs = data.configs;
+
+function showContextMenu(element: HTMLElement, event: MouseEvent) {
+  element.style.left = event.x + "px";
+  element.style.top = event.y + "px";
+  element.style.visibility = "visible";
+  const handler = (event: PointerEvent) => {
+    if (!event.target || !element.contains(event.target as HTMLElement)) {
+      element.style.visibility = "hidden";
+      document.removeEventListener("pointerdown", handler, { capture: true });
+    }
+  };
+  document.addEventListener("pointerdown", handler, { passive: true, capture: true });
+}
+
+const edgeMenu = ref<HTMLDivElement>();
+const edgeTraffic = ref<{
+  tcp: { bytes: number; packets: number };
+  udp: { bytes: number; packets: number };
+}>([]);
+function showEdgeContextMenu(params: vNG.EdgeEvent<MouseEvent>) {
+  const { event } = params;
+  // Disable browser's default context menu
+  event.stopPropagation();
+  event.preventDefault();
+  if (edgeMenu.value) {
+    edgeTraffic.value = {
+      tcp: { bytes: 1000000, packets: 1000 },
+      udp: { bytes: 50000, packets: 100 },
+    };
+
+    showContextMenu(edgeMenu.value, event);
+  }
+}
+
+const eventHandlers: vNG.EventHandlers = {
+  "node:click": ({ node }) => {
+    if (selectedNetwork.value == undefined) return;
+
+    const index = selectedNetwork.value.containers.findIndex((x) => x.name == node);
+    appStore.selectContainer(selectedNetwork.value.containers[index]);
+  },
+  "edge:contextmenu": showEdgeContextMenu,
+};
+</script>
+
 <template>
   <div class="bg-white dark:bg-gray-800 shadow-xs rounded-xl">
     <header class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
@@ -13,57 +74,13 @@
         :edges="edges"
         :layouts="layouts"
         :configs="configs"
-        :layers="layers"
         :event-handlers="eventHandlers"
       >
-        <template #edge-label="{ edge, scale, ...slotProps }">
-          <v-edge-label
-            :text="getLabel(edge.source, edge.target)"
-            align="source"
-            vertical-align="above"
-            v-bind="slotProps"
-            fill="#ff5500"
-            :font-size="12 * scale"
-          />
-        </template>
+        <div ref="edgeMenu" class="context-menu">Menu for the edges</div>
       </v-network-graph>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import * as vNG from "v-network-graph";
-import data from "@/data";
-
-import { storeToRefs } from "pinia";
-import { useAppStore } from "@/stores/useAppStore.ts";
-import { useNetworkConverter } from "@/useNetworkConverter.ts";
-
-const appStore = useAppStore();
-
-const { selectedNetwork } = storeToRefs(useAppStore());
-
-const { nodes, edges, layouts } = useNetworkConverter(selectedNetwork);
-
-const layers = {
-  badge: "nodes",
-};
-
-const configs = data.configs;
-
-const getLabel = (sourceName: string, targetName: string) => {
-  return "1 bytes";
-};
-
-const eventHandlers: vNG.EventHandlers = {
-  "node:click": ({ node }) => {
-    if (selectedNetwork.value == undefined) return;
-
-    const index = selectedNetwork.value.containers.findIndex((x) => x.name == node);
-    appStore.selectContainer(selectedNetwork.value.containers[index]);
-  },
-};
-</script>
 
 <style scoped>
 .graph {

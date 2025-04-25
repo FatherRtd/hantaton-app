@@ -10,7 +10,7 @@ const configs = defineConfigs({
   },
   edge: {
     normal: {
-      width: 1,
+      width: 3,
       color: "#666666",
     },
     hover: {
