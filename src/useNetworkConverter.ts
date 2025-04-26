@@ -1,4 +1,3 @@
-import type { NetworkResponse } from "@/models/ContainerResponse.ts";
 import { computed, type Ref } from "vue";
 import type { Edges, Layouts, Nodes } from "v-network-graph";
 

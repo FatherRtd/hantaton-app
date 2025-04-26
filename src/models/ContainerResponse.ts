@@ -1,7 +1,19 @@
-export type ContainerResponse = {
+export interface IContainerStats {
+  cpuUsage: string;
+  memoryUsage: string;
+  memoryLimit: string;
+  memoryPercentage: string;
+  hddRead: string;
+  hddWrite: string;
+  netInput: string;
+  netOutput: string;
+}
+
+export interface IRichContainerData {
   name: string;
   ip: string;
   id: string;
+  networkName: string;
   status: {
     status: string;
     state: string;
@@ -11,9 +23,12 @@ export type ContainerResponse = {
     private: number;
   }[];
   imageName: string;
+  stats?: IContainerStats;
+  logs: string;
   to: {
     name: string;
     ip: string;
+    port: number;
     traffic: {
       tcp: {
         bytes: number;
@@ -25,14 +40,15 @@ export type ContainerResponse = {
       };
     };
   }[];
-};
+}
 
-export type NetworkResponse = {
+export interface IHostResponse {
   name: string;
-  containers: ContainerResponse[];
-};
+  ip: string;
+  containers: IRichContainerData[];
+}
 
-export type MetricResponse = {
+export interface IMetricResponse {
   timestamp: string;
-  networks: NetworkResponse[];
-};
+  hosts: IHostResponse[];
+}

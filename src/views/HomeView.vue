@@ -15,15 +15,15 @@
             <NetworkGraph />
           </div>
 
-          <div v-if="selectedContainer != undefined" class="grid grid-cols-3 gap-4 w-full">
-            <AppCard label="Состояние контейнера">
-              <ContainerState />
-            </AppCard>
-            <AppCard label="Информация о контейнере">
-              <ContainerInfo />
-            </AppCard>
-            <AppCard label="Логи"> </AppCard>
-          </div>
+          <!--          <div class="grid grid-cols-3 gap-4 w-full">-->
+          <!--            <AppCard label="Состояние контейнера">-->
+          <!--              <ContainerState />-->
+          <!--            </AppCard>-->
+          <!--            <AppCard label="Информация о контейнере">-->
+          <!--              <ContainerInfo />-->
+          <!--            </AppCard>-->
+          <!--            <AppCard label="Логи"> </AppCard>-->
+          <!--          </div>-->
         </div>
       </main>
     </div>
@@ -37,7 +37,7 @@ import AppHeader from "../components/layout/AppHeader.vue";
 import NetworkGraph from "@/components/dashboard/NetworkGraph.vue";
 import AppCard from "@/components/dashboard/AppCard.vue";
 import data from "@/data";
-import type { MetricResponse } from "@/models/ContainerResponse.ts";
+import type { IMetricResponse } from "@/models/ContainerResponse.ts";
 import ContainerInfo from "@/components/dashboard/ContainerInfo.vue";
 import ContainerState from "@/components/dashboard/ContainerState.vue";
 import { storeToRefs } from "pinia";
@@ -45,8 +45,6 @@ import { useAppStore } from "@/stores/useAppStore.ts";
 
 const sidebarOpen = ref(false);
 
-const mockMetrics = ref<MetricResponse>(data.mockMetricResponse);
+const mockMetrics = ref<IMetricResponse>(data.mockMetricResponse);
 const metrics = computed(() => mockMetrics.value);
-
-const { selectedContainer } = storeToRefs(useAppStore());
 </script>

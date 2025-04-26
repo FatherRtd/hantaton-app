@@ -49,30 +49,21 @@
                     </svg>
                     <span
                       class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200"
-                      >Networks</span
+                      >Hosts</span
                     >
                   </div>
                 </div>
               </a>
               <div class="lg:hidden lg:sidebar-expanded:block 2xl:block">
                 <ul class="pl-8 mt-1" :class="!parentLink.expanded && 'hidden'">
-                  <li
-                    v-for="network in metrics.networks"
-                    :key="network.name"
-                    class="mb-1 last:mb-0"
-                    @click="selectNetwork(network)"
-                  >
+                  <li v-for="host in allHosts" :key="host.ip" class="mb-1 last:mb-0">
                     <a
                       class="block transition truncate"
-                      :class="
-                        isActive(network)
-                          ? 'text-violet-500'
-                          : 'text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                      "
+                      :class="'text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'"
                     >
                       <span
                         class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200 cursor-pointer"
-                        >{{ network.name }}</span
+                        >{{ host.ip }} ({{ host.containers.length }})</span
                       >
                     </a>
                   </li>
@@ -109,22 +100,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from "vue";
+import { ref, onMounted, onUnmounted, watch, computed } from "vue";
 
 import SidebarLinkGroup from "./SidebarLinkGroup.vue";
-import type { MetricResponse, NetworkResponse } from "@/models/ContainerResponse.ts";
 import { useAppStore } from "@/stores/useAppStore.ts";
 
-const props = defineProps<{ sidebarOpen: boolean; metrics: MetricResponse }>();
+const props = defineProps<{ sidebarOpen: boolean }>();
 
 const appStore = useAppStore();
-
-const selectNetwork = (network: NetworkResponse) => {
-  appStore.selectNetwork(network);
-};
-const isActive = (network: NetworkResponse) => {
-  return appStore.selectedNetwork ? network.name == appStore.selectedNetwork.name : false;
-};
+const allHosts = computed(() => appStore.hosts);
 
 const trigger = ref(null);
 const sidebar = ref(null);
