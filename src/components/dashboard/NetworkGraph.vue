@@ -2,7 +2,7 @@
 import * as vNG from "v-network-graph";
 
 import { generateLayout, useAppStore } from "@/stores/useAppStore.ts";
-import { defineConfigs } from "v-network-graph";
+import { defineConfigs, type Edges, type Nodes } from "v-network-graph";
 import { computed } from "vue";
 import {
   type ForceEdgeDatum,
@@ -12,15 +12,10 @@ import {
 
 const appStore = useAppStore();
 
-// const layouts = generateLayout(appStore.graphData.nodes, appStore.graphData.edges);
-
 const eventHandlers: vNG.EventHandlers = {
-  // "node:click": ({ node }) => {
-  //   if (selectedNetwork.value == undefined) return;
-  //
-  //   const index = selectedNetwork.value.containers.findIndex((x) => x.name == node);
-  //   appStore.selectContainer(selectedNetwork.value.containers[index]);
-  // },
+  "node:click": ({ node }) => {
+    appStore.selectedContainer = appStore.graphData.nodes[node];
+  },
 };
 
 const configs = computed(() =>
@@ -30,7 +25,6 @@ const configs = computed(() =>
         positionFixedByDrag: false,
         positionFixedByClickWithAltKey: true,
         createSimulation: (d3, nodes, edges) => {
-          // d3-force parameters
           const forceLink = d3.forceLink<ForceNodeDatum, ForceEdgeDatum>(edges).id((d) => d.id);
           return d3
             .forceSimulation(nodes)
@@ -38,16 +32,6 @@ const configs = computed(() =>
             .force("charge", d3.forceManyBody().strength(-800))
             .force("center", d3.forceCenter().strength(0.05))
             .alphaMin(0.001);
-
-          // * The following are the default parameters for the simulation.
-          // const forceLink = d3.forceLink<ForceNodeDatum, ForceEdgeDatum>(edges).id(d => d.id)
-          // return d3
-          //   .forceSimulation(nodes)
-          //   .force("edge", forceLink.distance(100))
-          //   .force("charge", d3.forceManyBody())
-          //   .force("collide", d3.forceCollide(50).strength(0.2))
-          //   .force("center", d3.forceCenter().strength(0.05))
-          //   .alphaMin(0.001)
         },
       }),
     },
@@ -88,10 +72,10 @@ const configs = computed(() =>
         width: 2,
         color: (edge) => {
           return edge.traffic.tcp.bytes < 2000
-            ? "#008000"
+            ? "#48C774"
             : edge.traffic.tcp.bytes >= 2000 && edge.traffic.tcp.bytes < 4000
-              ? "#FFFF00"
-              : "#ff0000";
+              ? "#F9C74F"
+              : "#ff0000"; //#E74C3C
         },
       },
       marker: {

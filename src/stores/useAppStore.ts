@@ -1,16 +1,18 @@
 import { defineStore } from "pinia";
 import { computed, type ComputedRef, ref } from "vue";
-import type { IHostResponse, IMetricResponse } from "@/models/ContainerResponse.ts";
+import type {
+  IHostResponse,
+  IMetricResponse,
+  IRichContainerData,
+} from "@/models/ContainerResponse.ts";
 
 import type { Edges, Layouts, Nodes } from "v-network-graph";
 import generateTestData from "@/data";
 
 export const useAppStore = defineStore("appStore", () => {
-  const allData = ref<IMetricResponse>(generateTestData(6, 4));
+  const allData = ref<IMetricResponse>(generateTestData(2, 5));
 
   const hosts = computed(() => allData.value?.hosts);
-
-  const hostAddresses = computed(() => hosts.value.map((x) => x.ip));
 
   const getContainersByHost = (ip: string) => {
     const hostIndex = hosts.value.findIndex((x) => x.ip == ip);
@@ -20,7 +22,9 @@ export const useAppStore = defineStore("appStore", () => {
 
   const graphData = computed(() => convertToGraph(allData.value));
 
-  return { allData, hosts, getContainersByHost, graphData };
+  const selectedContainer = ref<{ data: IRichContainerData; name: string }>();
+
+  return { allData, hosts, getContainersByHost, graphData, selectedContainer };
 });
 
 function convertToGraph(metricResponse: IMetricResponse): { nodes: Nodes; edges: Edges } {

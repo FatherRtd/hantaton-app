@@ -70,6 +70,8 @@
                 </ul>
               </div>
             </SidebarLinkGroup>
+
+            <ContainerInfo v-if="isContainerSelected" />
           </ul>
         </div>
       </div>
@@ -104,11 +106,15 @@ import { ref, onMounted, onUnmounted, watch, computed } from "vue";
 
 import SidebarLinkGroup from "./SidebarLinkGroup.vue";
 import { useAppStore } from "@/stores/useAppStore.ts";
+import AppCard from "@/components/dashboard/AppCard.vue";
+import ContainerInfo from "@/components/dashboard/ContainerInfo.vue";
 
 const props = defineProps<{ sidebarOpen: boolean }>();
 
 const appStore = useAppStore();
 const allHosts = computed(() => appStore.hosts);
+
+const isContainerSelected = computed(() => appStore.selectedContainer != undefined);
 
 const trigger = ref(null);
 const sidebar = ref(null);
