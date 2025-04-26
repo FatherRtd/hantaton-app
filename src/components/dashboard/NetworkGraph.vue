@@ -3,12 +3,13 @@ import * as vNG from "v-network-graph";
 
 import { generateLayout, useAppStore } from "@/stores/useAppStore.ts";
 import { defineConfigs, type Edges, type Nodes } from "v-network-graph";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import {
   type ForceEdgeDatum,
   ForceLayout,
   type ForceNodeDatum,
 } from "v-network-graph/lib/force-layout";
+import ExportGraph from "@/components/dashboard/ExportGraph.vue";
 
 const appStore = useAppStore();
 
@@ -86,12 +87,34 @@ const configs = computed(() =>
     },
   }),
 );
+
+const dialogTableVisible = ref(false);
 </script>
 
 <template>
   <div class="bg-white dark:bg-gray-800 shadow-xs rounded-xl">
-    <header class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
+    <header
+      class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60 flex items-center justify-between"
+    >
       <h2 class="font-semibold text-gray-800 dark:text-gray-100">Сеть</h2>
+      <button
+        class="flex items-center justify-center gap-2 bg-violet-500 hover:bg-violet-600 text-white font-medium py-2 px-4 rounded transition-colors duration-200"
+        @click="dialogTableVisible = true"
+      >
+        Export
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </button>
     </header>
 
     <div class="p-3" v-if="appStore.graphData.nodes">
@@ -106,6 +129,10 @@ const configs = computed(() =>
       </v-network-graph>
     </div>
   </div>
+
+  <el-dialog v-model="dialogTableVisible" title="Export" width="800">
+    <ExportGraph />
+  </el-dialog>
 </template>
 
 <style scoped>

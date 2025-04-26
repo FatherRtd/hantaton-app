@@ -23,4 +23,5 @@
 <script setup lang="ts">
 import ThemeToggle from "../ThemeToggle.vue";
 import UserMenu from "../DropdownProfile.vue";
+import { Upload } from "@element-plus/icons-vue";
 </script>
