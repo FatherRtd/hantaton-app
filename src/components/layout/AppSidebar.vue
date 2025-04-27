@@ -13,7 +13,6 @@
             </div>
             <div>
               <div>Docker</div>
-              <div>Monitor</div>
             </div>
           </div>
           <div v-else>
@@ -58,13 +57,24 @@
                 <ul class="pl-8 mt-1" :class="!parentLink.expanded && 'hidden'">
                   <li v-for="host in allHosts" :key="host.ip" class="mb-1 last:mb-0">
                     <a
-                      class="block transition truncate"
+                      class="block transition truncate flex items-center justify-between"
                       :class="'text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'"
                     >
-                      <span
-                        class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200 cursor-pointer"
-                        >{{ host.ip }} ({{ host.containers.length }})</span
+                      <div class="flex items-center">
+                        <el-checkbox @change="(x) => onFilterSelect(x, host)" />
+                        <div class="ml-2">
+                          <span
+                            class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200 cursor-pointer"
+                            >{{ host.ip }}</span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="flex items-center justify-center rounded-full bg-violet-500 text-white text-xs font-semibold h-6 w-12"
                       >
+                        <img width="24px" height="24px" src="../../assets/docker.png" alt="" />
+                        <div class="ml-2">{{ host.containers.length }}</div>
+                      </div>
                     </a>
                   </li>
                 </ul>
@@ -108,6 +118,7 @@ import SidebarLinkGroup from "./SidebarLinkGroup.vue";
 import { useAppStore } from "@/stores/useAppStore.ts";
 import AppCard from "@/components/dashboard/AppCard.vue";
 import ContainerInfo from "@/components/dashboard/ContainerInfo.vue";
+import type { IHostResponse } from "@/models/ContainerResponse.ts";
 
 const props = defineProps<{ sidebarOpen: boolean }>();
 
@@ -151,4 +162,13 @@ watch(sidebarExpanded, () => {
     document.querySelector("body").classList.remove("sidebar-expanded");
   }
 });
+
+const onFilterSelect = (isSelected: boolean, node: IHostResponse) => {
+  if (isSelected) {
+    appStore.hostsFilter.push(node);
+  } else {
+    const nodeIndex = appStore.hostsFilter.indexOf(node);
+    appStore.hostsFilter.splice(nodeIndex, 1);
+  }
+};
 </script>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import * as vNG from "v-network-graph";
 
-import { generateLayout, useAppStore } from "@/stores/useAppStore.ts";
+import { useAppStore } from "@/stores/useAppStore.ts";
 import { defineConfigs, type Edges, type Nodes } from "v-network-graph";
 import { computed, ref } from "vue";
 import {
@@ -23,7 +23,7 @@ const configs = computed(() =>
   defineConfigs({
     view: {
       layoutHandler: new ForceLayout({
-        positionFixedByDrag: false,
+        positionFixedByDrag: true,
         positionFixedByClickWithAltKey: true,
         createSimulation: (d3, nodes, edges) => {
           const forceLink = d3.forceLink<ForceNodeDatum, ForceEdgeDatum>(edges).id((d) => d.id);
