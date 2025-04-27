@@ -11,7 +11,7 @@ const { status, data, send, open, close } = useWebSocket<IMetricResponse>(
 const appStore = useAppStore();
 
 watch(data, () => {
-  appStore.allData = data;
+  appStore.allData = data.value;
 });
 
 onMounted(() => {
