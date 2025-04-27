@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  test-one:
+    container_name: test-one
+    build: test-one
+    ports:
+      - "3101:3000"
+    restart: unless-stopped
+    networks:
+      - containers-net
+
+  test-two:
+    container_name: test-two
+    build: test-two
+    ports:
+      - "3102:3000"
+    restart: unless-stopped
+    networks:
+      - containers-net
+
+  test-three:
+    container_name: test-three
+    build: test-three
+    ports:
+      - "3105:3000"
+    restart: unless-stopped
+    networks:
+      - containers-net
+
+networks:
+  containers-net:
+    driver: bridge
