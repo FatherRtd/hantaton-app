@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  exporter:
+    build: ./exporter
+    container_name: exporter
+    volumes:
+      - socket_volume:/tmp
+      - /var/run/docker.sock:/var/run/docker.sock
+    network_mode: host
+    privileged: true
+    stdin_open: true
+    tty: true
+
+
+  monitor:
+    build: ./monitor
+    container_name: monitor
+    ports:
+      - "3001:3001"
+    volumes:
+      - socket_volume:/tmp
+    depends_on:
+      - exporter
+
+    all:
+    build: ./all
+    container_name: all
+    ports:
+      - "3000:3011"
+    depends_on:
+      - exporter
+      - monitor
+
+volumes:
+  socket_volume:
