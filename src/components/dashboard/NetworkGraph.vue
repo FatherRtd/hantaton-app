@@ -76,7 +76,7 @@ const configs = computed(() =>
             ? "#48C774"
             : edge.traffic.tcp.bytes >= 2000 && edge.traffic.tcp.bytes < 4000
               ? "#F9C74F"
-              : "#ff0000"; //#E74C3C
+              : "#ff0000";
         },
       },
       marker: {

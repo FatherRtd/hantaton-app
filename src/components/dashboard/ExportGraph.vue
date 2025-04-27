@@ -23,7 +23,6 @@ const nextEdgeIndex = ref(Object.keys(edges).length + 1);
 const selectedNodes = ref<string[]>([]);
 const selectedEdges = ref<string[]>([]);
 
-// ref="graph"
 const graph = ref<vNG.Instance>();
 
 async function downloadAsSvg() {
@@ -32,7 +31,7 @@ async function downloadAsSvg() {
   const url = URL.createObjectURL(new Blob([text], { type: "octet/stream" }));
   const a = document.createElement("a");
   a.href = url;
-  a.download = "network-graph.svg"; // filename to download
+  a.download = "network-graph.svg";
   a.click();
   window.URL.revokeObjectURL(url);
 }
@@ -122,7 +121,7 @@ const configs = computed(() =>
             ? "#48C774"
             : edge.traffic.tcp.bytes >= 2000 && edge.traffic.tcp.bytes < 4000
               ? "#F9C74F"
-              : "#ff0000"; //#E74C3C
+              : "#ff0000";
         },
       },
       marker: {

@@ -7,10 +7,9 @@ import type {
 } from "@/models/ContainerResponse.ts";
 
 import type { Edges, Layouts, Nodes } from "v-network-graph";
-import generateTestData from "@/data";
 
 export const useAppStore = defineStore("appStore", () => {
-  const allData = ref<IMetricResponse>(generateTestData());
+  const allData = ref<IMetricResponse>();
 
   const hosts = computed(() => allData.value?.hosts);
 
